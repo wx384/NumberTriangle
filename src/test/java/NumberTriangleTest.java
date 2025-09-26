@@ -16,6 +16,14 @@ public class NumberTriangleTest {
     }
 
     @Test
+    public void testSumMaxPath() throws IOException {
+        NumberTriangle mt = NumberTriangle.loadTriangle("input_tree.txt");
+        NumberTriangle mtNew = new NumberTriangle(252);
+        mt.maxSumPath();
+        assertEquals(mtNew, mt);
+    }
+
+    @Test
     public void rootTree() throws IOException {
 
         NumberTriangle mt = NumberTriangle.loadTriangle("input_tree.txt");

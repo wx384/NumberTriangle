@@ -1,4 +1,7 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This is the provided NumberTriangle class to be used in this coding task.
@@ -64,7 +67,33 @@ public class NumberTriangle {
      */
     public void maxSumPath() {
         // for fun [not for credit]:
+        // base case: leaf: return
+        if (this.isLeaf()) {
+            return;
+        }
+        else {
+            int maxSum = this.maxSum();
+            this.root = maxSum;
+            this.left = null;
+            this.right = null;
+
+            }
+
+        }
+
+    public int maxSum() {
+
+        if (this.isLeaf()) {
+            return this.getRoot();
+        }
+        else {
+            int max = this.getRoot();
+            max += Math.max(this.left.maxSum(), this.right.maxSum());
+            return max;
+        }
+
     }
+
 
 
     public boolean isLeaf() {
@@ -89,7 +118,17 @@ public class NumberTriangle {
      */
     public int retrieve(String path) {
         // TODO implement this method
-        return -1;
+        if (this.isLeaf() || path.equals("")) {
+            return this.getRoot();
+        } else {
+            int endRoot;
+            // substring(0) just returns the whole string
+            if (path.startsWith("l")){
+                return this.left.retrieve(path.substring(1));
+            } else {
+                return this.right.retrieve(path.substring(1));
+            }T
+        }
     }
 
     /** Read in the NumberTriangle structure from a file.
@@ -109,28 +148,80 @@ public class NumberTriangle {
         InputStream inputStream = NumberTriangle.class.getClassLoader().getResourceAsStream(fname);
         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
+        List <NumberTriangle> topRow = loadRows(br);
 
-        // TODO define any variables that you want to use to store things
-
-        // will need to return the top of the NumberTriangle,
-        // so might want a variable for that.
-        NumberTriangle top = null;
-
-        String line = br.readLine();
-        while (line != null) {
-
-            // remove when done; this line is included so running starter code prints the contents of the file
-            System.out.println(line);
-
-            // TODO process the line
-
-            //read the next line
-            line = br.readLine();
-        }
         br.close();
-        return top;
+
+        // The triangle has at least height 1 per the spec.
+        return topRow.isEmpty() ? null : topRow.get(0);
+
+//        // TODO define any variables that you want to use to store things
+//        NumberTriangle left = null;
+//        NumberTriangle right = null;
+//
+//        // will need to return the top of the NumberTriangle,
+//        // so might want a variable for that.
+//        NumberTriangle top = null;
+//
+//        String line = br.readLine();
+//        while (line != null) {
+//
+//            // remove when done; this line is included so running starter code prints the contents of the file
+//            System.out.println(line);
+//
+//            // TODO process the line
+//            String [] parts = line.split("\\s");
+//            if (parts.length == 1) {
+//                top = new NumberTriangle(Integer.parseInt(parts[0].trim()));
+//                return top;
+//            } else {
+//                for (int i = 1; i < parts.length; i++) {
+//
+//                }
+//                left = new NumberTriangle(Integer.parseInt(parts[1].trim()));
+//                right = new NumberTriangle(Integer.parseInt(parts[2].trim()));
+//
+//            }
+//            //read the next line
+//            line = br.readLine();
+//        }
+//        br.close();
+//        return top;
     }
 
+    private static List<NumberTriangle> loadRows(BufferedReader br) throws IOException {
+        String line = br.readLine();
+
+        if (line == null) {
+            return Collections.emptyList();
+        }
+
+        line = line.trim();
+        if (line.isEmpty()) {
+            return loadRows(br);
+        }
+
+        String[] parts = line.split("\\s+");
+        int n = parts.length;
+        int[] nums = new int[n];
+        for (int i = 0; i < n; i++) {
+            nums[i] = Integer.parseInt(parts[i]);
+        }
+
+        List<NumberTriangle> lowerRow = loadRows(br);
+
+        List<NumberTriangle> currentRow = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            NumberTriangle node = new NumberTriangle(nums[i]);
+            if (!lowerRow.isEmpty()) {
+                node.setLeft(lowerRow.get(i));
+                node.setRight(lowerRow.get(i + 1));
+            }
+            currentRow.add(node);
+        }
+
+        return currentRow;
+    }
     public static void main(String[] args) throws IOException {
 
         NumberTriangle mt = NumberTriangle.loadTriangle("input_tree.txt");
