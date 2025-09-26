@@ -127,7 +127,7 @@ public class NumberTriangle {
                 return this.left.retrieve(path.substring(1));
             } else {
                 return this.right.retrieve(path.substring(1));
-            }T
+            }
         }
     }
 
